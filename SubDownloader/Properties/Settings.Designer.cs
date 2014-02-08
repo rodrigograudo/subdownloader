@@ -46,5 +46,17 @@ namespace SubDownloader.Properties {
                 this["ExibirJaBaixadas"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-\r\n.")]
+        public string IgnorarStrings {
+            get {
+                return ((string)(this["IgnorarStrings"]));
+            }
+            set {
+                this["IgnorarStrings"] = value;
+            }
+        }
     }
 }

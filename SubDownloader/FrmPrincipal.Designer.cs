@@ -30,14 +30,13 @@
         {
             this.btnBaixar = new System.Windows.Forms.Button();
             this.dgSeries = new System.Windows.Forms.DataGridView();
-            this.txtDiretorioSeries = new System.Windows.Forms.TextBox();
-            this.lblDiretorioSeries = new System.Windows.Forms.Label();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.Serie = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Download = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.txtDiretorioSeries = new System.Windows.Forms.TextBox();
+            this.lblDiretorioSeries = new System.Windows.Forms.Label();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.btnLimparLegendas = new System.Windows.Forms.Button();
-            this.cbExibirJaBaixadas = new System.Windows.Forms.CheckBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.configuraçãoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dgSeries)).BeginInit();
@@ -71,23 +70,6 @@
             this.dgSeries.Size = new System.Drawing.Size(863, 358);
             this.dgSeries.TabIndex = 1;
             // 
-            // txtDiretorioSeries
-            // 
-            this.txtDiretorioSeries.Location = new System.Drawing.Point(96, 34);
-            this.txtDiretorioSeries.Name = "txtDiretorioSeries";
-            this.txtDiretorioSeries.Size = new System.Drawing.Size(777, 20);
-            this.txtDiretorioSeries.TabIndex = 2;
-            this.txtDiretorioSeries.Click += new System.EventHandler(this.txtDiretorioSeries_Click);
-            // 
-            // lblDiretorioSeries
-            // 
-            this.lblDiretorioSeries.AutoSize = true;
-            this.lblDiretorioSeries.Location = new System.Drawing.Point(12, 37);
-            this.lblDiretorioSeries.Name = "lblDiretorioSeries";
-            this.lblDiretorioSeries.Size = new System.Drawing.Size(78, 13);
-            this.lblDiretorioSeries.TabIndex = 3;
-            this.lblDiretorioSeries.Text = "Diretório Séries";
-            // 
             // Serie
             // 
             this.Serie.DataPropertyName = "Serie";
@@ -114,6 +96,23 @@
             this.Status.ReadOnly = true;
             this.Status.Width = 460;
             // 
+            // txtDiretorioSeries
+            // 
+            this.txtDiretorioSeries.Location = new System.Drawing.Point(96, 34);
+            this.txtDiretorioSeries.Name = "txtDiretorioSeries";
+            this.txtDiretorioSeries.Size = new System.Drawing.Size(777, 20);
+            this.txtDiretorioSeries.TabIndex = 2;
+            this.txtDiretorioSeries.Click += new System.EventHandler(this.txtDiretorioSeries_Click);
+            // 
+            // lblDiretorioSeries
+            // 
+            this.lblDiretorioSeries.AutoSize = true;
+            this.lblDiretorioSeries.Location = new System.Drawing.Point(12, 37);
+            this.lblDiretorioSeries.Name = "lblDiretorioSeries";
+            this.lblDiretorioSeries.Size = new System.Drawing.Size(78, 13);
+            this.lblDiretorioSeries.TabIndex = 3;
+            this.lblDiretorioSeries.Text = "Diretório Séries";
+            // 
             // btnLimparLegendas
             // 
             this.btnLimparLegendas.Location = new System.Drawing.Point(96, 60);
@@ -123,16 +122,6 @@
             this.btnLimparLegendas.Text = "Limpar Legendas Baixadas";
             this.btnLimparLegendas.UseVisualStyleBackColor = true;
             this.btnLimparLegendas.Click += new System.EventHandler(this.btnLimparLegendas_Click);
-            // 
-            // cbExibirJaBaixadas
-            // 
-            this.cbExibirJaBaixadas.AutoSize = true;
-            this.cbExibirJaBaixadas.Location = new System.Drawing.Point(268, 64);
-            this.cbExibirJaBaixadas.Name = "cbExibirJaBaixadas";
-            this.cbExibirJaBaixadas.Size = new System.Drawing.Size(159, 17);
-            this.cbExibirJaBaixadas.TabIndex = 5;
-            this.cbExibirJaBaixadas.Text = "Exibir Episódios Já Baixados";
-            this.cbExibirJaBaixadas.UseVisualStyleBackColor = true;
             // 
             // menuStrip1
             // 
@@ -156,7 +145,6 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(885, 463);
-            this.Controls.Add(this.cbExibirJaBaixadas);
             this.Controls.Add(this.btnLimparLegendas);
             this.Controls.Add(this.lblDiretorioSeries);
             this.Controls.Add(this.txtDiretorioSeries);
@@ -190,7 +178,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Download;
         private System.Windows.Forms.DataGridViewTextBoxColumn Status;
         private System.Windows.Forms.Button btnLimparLegendas;
-        private System.Windows.Forms.CheckBox cbExibirJaBaixadas;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem configuraçãoToolStripMenuItem;
     }

@@ -42,7 +42,6 @@ namespace SubDownloader
         {
             InitializeComponent();
             txtDiretorioSeries.Text = Settings.Default["DiretorioSeries"].ToString();
-            cbExibirJaBaixadas.Checked = (bool)Settings.Default["ExibirJaBaixadas"];
         }
 
         private void btnBaixar_Click(object sender, EventArgs e)
@@ -67,11 +66,19 @@ namespace SubDownloader
 
         public string TrataNomeArquivo(string nomeArquivo)
         {
-            return Path.GetFileNameWithoutExtension(nomeArquivo).ToLower().Replace(".", "").Replace("-", "");
+            var nomeArquivoTratado = Path.GetFileNameWithoutExtension(nomeArquivo).ToLower();
+
+            foreach (var ignorar in Settings.Default["IgnorarStrings"].ToString().Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                nomeArquivoTratado = nomeArquivoTratado.Replace(ignorar.ToLower(), "");
+            }
+
+            return nomeArquivoTratado;
         }
 
         public void ExtrairLegenda(DataRow dr)
         {
+            var extraido = false;
             var arquivoDownload = dr["ArquivoDownload"].ToString();
             var arquivoEpisodio = dr["ArquivoEpisodio"].ToString();
 
@@ -82,9 +89,18 @@ namespace SubDownloader
                 if (TrataNomeArquivo(entry.FilePath) == TrataNomeArquivo(arquivoEpisodio))
                 {
                     entry.WriteToFile(txtDiretorioSeries.Text + "\\" + Path.GetFileNameWithoutExtension(arquivoEpisodio) + Path.GetExtension(entry.FilePath));
-                    dr["Status"] = "Legenda extraida.";
+                    extraido = true;
                     break;
                 }
+            }
+
+            if (extraido)
+            {
+                dr["Status"] = "Legenda extraida.";
+            }
+            else
+            {
+                dr["Status"] = "Não foi possivel extrair legenda.";
             }
         }
 
@@ -131,6 +147,7 @@ namespace SubDownloader
                         }
                         else
                         {
+                            dr["Download"] = "100";
                             ExtrairLegenda(dr);
                         }
 
@@ -173,7 +190,7 @@ namespace SubDownloader
                 dr["Download"] = "Ok";
                 dr["Status"] = "Legenda já baixada.";
 
-                if (cbExibirJaBaixadas.Checked) Series.Rows.Add(dr);
+                if ((bool)Settings.Default["ExibirJaBaixadas"]) Series.Rows.Add(dr);
             }
             else
             {
@@ -206,7 +223,6 @@ namespace SubDownloader
         private void FrmPrincipal_FormClosed(object sender, FormClosedEventArgs e)
         {
             Settings.Default["DiretorioSeries"] = txtDiretorioSeries.Text;
-            Settings.Default["ExibirJaBaixadas"] = cbExibirJaBaixadas.Checked;
             Settings.Default.Save();
         }
 

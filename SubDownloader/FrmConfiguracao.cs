@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SubDownloader.Properties;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,6 +16,15 @@ namespace SubDownloader
         public FrmConfiguracao()
         {
             InitializeComponent();
+            cbExibirJaBaixadas.Checked = (bool)Settings.Default["ExibirJaBaixadas"];
+            txtIgnorar.Text = Settings.Default["IgnorarStrings"].ToString();
+        }
+
+        private void FrmConfiguracao_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Settings.Default["ExibirJaBaixadas"] = cbExibirJaBaixadas.Checked;
+            Settings.Default["IgnorarStrings"] = txtIgnorar.Text;
+            Settings.Default.Save();
         }
     }
 }

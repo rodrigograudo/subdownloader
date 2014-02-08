@@ -8,5 +8,9 @@
     <Setting Name="ExibirJaBaixadas" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="IgnorarStrings" Type="System.String" Scope="User">
+      <Value Profile="(Default)">-
+.</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
