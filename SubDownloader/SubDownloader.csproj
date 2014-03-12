@@ -35,8 +35,8 @@
     <Reference Include="HtmlAgilityPack">
       <HintPath>..\packages\HtmlAgilityPack.1.4.6\lib\Net45\HtmlAgilityPack.dll</HintPath>
     </Reference>
-    <Reference Include="NUnrar">
-      <HintPath>..\packages\nunrar.1.0.1\lib\net40\NUnrar.dll</HintPath>
+    <Reference Include="SharpCompress">
+      <HintPath>..\packages\sharpcompress.0.10.3\lib\net40\SharpCompress.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

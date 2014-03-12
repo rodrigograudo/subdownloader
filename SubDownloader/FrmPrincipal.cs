@@ -1,5 +1,4 @@
-﻿using NUnrar.Archive;
-using SubDownloader.Properties;
+﻿using SubDownloader.Properties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,6 +11,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SharpCompress.Archive.Rar;
+using SharpCompress.Archive;
 
 namespace SubDownloader
 {
@@ -82,17 +83,19 @@ namespace SubDownloader
             var arquivoDownload = dr["ArquivoDownload"].ToString();
             var arquivoEpisodio = dr["ArquivoEpisodio"].ToString();
 
-            RarArchive arquivo = RarArchive.Open(arquivoDownload);
-
-            foreach (RarArchiveEntry entry in arquivo.Entries)
+            using (var arquivo = ArchiveFactory.Open(arquivoDownload))
             {
-                if (TrataNomeArquivo(entry.FilePath) == TrataNomeArquivo(arquivoEpisodio))
+                foreach (var entry in arquivo.Entries)
                 {
-                    entry.WriteToFile(txtDiretorioSeries.Text + "\\" + Path.GetFileNameWithoutExtension(arquivoEpisodio) + Path.GetExtension(entry.FilePath));
-                    extraido = true;
-                    break;
+                    if (TrataNomeArquivo(entry.FilePath) == TrataNomeArquivo(arquivoEpisodio))
+                    {
+                        entry.WriteToFile(txtDiretorioSeries.Text + "\\" + Path.GetFileNameWithoutExtension(arquivoEpisodio) + Path.GetExtension(entry.FilePath));
+                        extraido = true;
+                        break;
+                    }
                 }
             }
+
 
             if (extraido)
             {
@@ -173,6 +176,8 @@ namespace SubDownloader
         {
             var dr = e.UserState as DataRow;
             dr["Status"] = "Download Completo!";
+
+            ExtrairLegenda(dr);
         }
 
         public void ValidaEpisodioSeriado(string diretorio, string arquivo)
@@ -230,7 +235,12 @@ namespace SubDownloader
         {
             if (Directory.Exists(pastaDownloads))
             {
-                Directory.Delete(pastaDownloads, true);
+                var pastaDownlaodsInfo = new DirectoryInfo(pastaDownloads);
+
+                foreach (var file in pastaDownlaodsInfo.GetFiles())
+                {
+                    file.Delete();
+                }
             }
 
             Directory.CreateDirectory(pastaDownloads);
