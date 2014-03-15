@@ -13,42 +13,27 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using SharpCompress.Archive.Rar;
 using SharpCompress.Archive;
+using System.Diagnostics;
 
 namespace SubDownloader
 {
     public partial class FrmPrincipal : Form
     {
         private string pastaDownloads = AppDomain.CurrentDomain.BaseDirectory + "Legendas\\";
-        private DataTable _series;
-
-        public DataTable Series
-        {
-            get
-            {
-                if (_series == null)
-                {
-                    _series = new DataTable();
-                    _series.Columns.Add(new DataColumn("Serie"));
-                    _series.Columns.Add(new DataColumn("Download"));
-                    _series.Columns.Add(new DataColumn("Status"));
-                    _series.Columns.Add(new DataColumn("ArquivoEpisodio"));
-                    _series.Columns.Add(new DataColumn("ArquivoDownload"));
-                }
-
-                return _series;
-            }
-        }
+        private BindingList<Episodio> episodios;
 
         public FrmPrincipal()
         {
             InitializeComponent();
             txtDiretorioSeries.Text = Settings.Default["DiretorioSeries"].ToString();
+
+            episodios = new BindingList<Episodio>();
+            dgvEpisodios.DataSource = episodios;
         }
 
         private void btnBaixar_Click(object sender, EventArgs e)
         {
-            dgSeries.DataSource = Series;
-            Series.Clear();
+            episodios.Clear();
 
             if (!Directory.Exists(pastaDownloads))
             {
@@ -58,6 +43,11 @@ namespace SubDownloader
             if (Directory.Exists(txtDiretorioSeries.Text))
             {
                 BuscaSeriados(txtDiretorioSeries.Text);
+
+                foreach (var episodio in episodios)
+                {
+                    BuscaLegenda(episodio);
+                }
             }
             else
             {
@@ -77,48 +67,48 @@ namespace SubDownloader
             return nomeArquivoTratado;
         }
 
-        public void ExtrairLegenda(DataRow dr)
+        public void ExtrairLegenda(Episodio episodio)
         {
             var extraido = false;
-            var arquivoDownload = dr["ArquivoDownload"].ToString();
-            var arquivoEpisodio = dr["ArquivoEpisodio"].ToString();
 
-            using (var arquivo = ArchiveFactory.Open(arquivoDownload))
+            try
             {
-                foreach (var entry in arquivo.Entries)
+                using (var arquivo = ArchiveFactory.Open(episodio.ArquivoDownload))
                 {
-                    if (TrataNomeArquivo(entry.FilePath) == TrataNomeArquivo(arquivoEpisodio))
+                    foreach (var entry in arquivo.Entries)
                     {
-                        entry.WriteToFile(txtDiretorioSeries.Text + "\\" + Path.GetFileNameWithoutExtension(arquivoEpisodio) + Path.GetExtension(entry.FilePath));
-                        extraido = true;
-                        break;
+                        if (TrataNomeArquivo(entry.FilePath) == TrataNomeArquivo(episodio.ArquivoEpisodio))
+                        {
+                            entry.WriteToFile(txtDiretorioSeries.Text + "\\" + Path.GetFileNameWithoutExtension(episodio.ArquivoEpisodio) + Path.GetExtension(entry.FilePath));
+                            episodio.Status = "Legenda extraida.";
+                            break;
+                        }
                     }
                 }
             }
-
-
-            if (extraido)
+            catch
             {
-                dr["Status"] = "Legenda extraida.";
+                episodio.Status = "Ocorreu um erro ao extrair a legenda.";
             }
-            else
+
+            if (!extraido)
             {
-                dr["Status"] = "Não foi possivel extrair legenda.";
+                episodio.Status = "Não foi possivel extrair legenda.";
             }
         }
 
-        public void BuscaLegenda(string nomeEpisodio, DataRow dr)
+        public void BuscaLegenda(Episodio episodio)
         {
             string urlLegenda = "http://legendas.tv/util/carrega_legendas_busca/termo:{0}/id_idioma:1/sel_tipo:d";
             string urlDownload = "http://legendas.tv/downloadarquivo/{0}";
 
             HtmlAgilityPack.HtmlDocument html = new HtmlAgilityPack.HtmlDocument();
 
-            using (WebClient webClient = new WebClient())
+            using (WebDownload webDownload = new WebDownload())
             {
                 try
                 {
-                    html.LoadHtml(webClient.DownloadString(String.Format(urlLegenda, nomeEpisodio)));
+                    html.LoadHtml(webDownload.DownloadString(String.Format(urlLegenda, episodio.Nome)));
 
                     string idLegenda = String.Empty;
 
@@ -126,8 +116,8 @@ namespace SubDownloader
 
                     if (links == null)
                     {
-                        dr["Download"] = "Erro";
-                        dr["Status"] = "Legenda não encontrada.";
+                        episodio.Download = "Erro";
+                        episodio.Status = "Legenda não encontrada.";
                     }
                     else
                     {
@@ -140,44 +130,44 @@ namespace SubDownloader
                         var uriDownload = new Uri(String.Format(urlDownload, idLegenda));
                         var nomeArquivoDownload = String.Format("{0}{1}.rar", pastaDownloads, idLegenda);
 
-                        dr["ArquivoDownload"] = nomeArquivoDownload;
+                        episodio.ArquivoDownload = nomeArquivoDownload;
 
                         if (!File.Exists(nomeArquivoDownload))
                         {
-                            webClient.DownloadFileAsync(uriDownload, nomeArquivoDownload, dr);
-                            webClient.DownloadFileCompleted += webClient_DownloadFileCompleted;
-                            webClient.DownloadProgressChanged += webClient_DownloadProgressChanged;
+                            webDownload.DownloadFileAsync(uriDownload, nomeArquivoDownload, episodio);
+                            webDownload.DownloadFileCompleted += webClient_DownloadFileCompleted;
+                            webDownload.DownloadProgressChanged += webClient_DownloadProgressChanged;
                         }
                         else
                         {
-                            dr["Download"] = "100";
-                            ExtrairLegenda(dr);
+                            episodio.Download = "100";
+                            ExtrairLegenda(episodio);
                         }
 
-                        dgSeries.FirstDisplayedScrollingRowIndex = dgSeries.Rows.Count - 1;
-                        dgSeries.Update();
+                        dgvEpisodios.FirstDisplayedScrollingRowIndex = dgvEpisodios.Rows.Count - 1;
+                        dgvEpisodios.Update();
                     }
                 }
                 catch
                 {
-                    dr["Download"] = "Erro";
-                    dr["Status"] = "Ocorreu um erro na busca da legenda.";
+                    episodio.Download = "Erro";
+                    episodio.Status = "Ocorreu um erro na busca da legenda.";
                 }
             }
         }
 
         void webClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
-            var dr = e.UserState as DataRow;
-            dr["Download"] = e.ProgressPercentage;
+            var episodio = e.UserState as Episodio;
+            episodio.Download = e.ProgressPercentage.ToString();
         }
 
         void webClient_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
-            var dr = e.UserState as DataRow;
-            dr["Status"] = "Download Completo!";
+            var episodio = e.UserState as Episodio;
+            episodio.Status = "Download Completo!";
 
-            ExtrairLegenda(dr);
+            ExtrairLegenda(episodio);
         }
 
         public void ValidaEpisodioSeriado(string diretorio, string arquivo)
@@ -186,21 +176,20 @@ namespace SubDownloader
 
             if (String.IsNullOrEmpty(nomeEpisodio)) return;
 
-            DataRow dr = Series.NewRow();
-            dr["Serie"] = nomeEpisodio;
-            dr["ArquivoEpisodio"] = arquivo;
+            var episodio = new Episodio();
+            episodio.Nome = nomeEpisodio;
+            episodio.ArquivoEpisodio = arquivo;
 
             if (Directory.GetFiles(diretorio, nomeEpisodio + "*").Count() > 1)
             {
-                dr["Download"] = "Ok";
-                dr["Status"] = "Legenda já baixada.";
+                episodio.Download = "Ok";
+                episodio.Status = "Legenda já baixada.";
 
-                if ((bool)Settings.Default["ExibirJaBaixadas"]) Series.Rows.Add(dr);
+                if ((bool)Settings.Default["ExibirJaBaixadas"]) episodios.Add(episodio);
             }
             else
             {
-                Series.Rows.Add(dr);
-                BuscaLegenda(nomeEpisodio, dr);
+                episodios.Add(episodio);
             }
         }
 
@@ -249,6 +238,22 @@ namespace SubDownloader
         private void configuraçãoToolStripMenuItem_Click(object sender, EventArgs e)
         {
             new FrmConfiguracao().ShowDialog();
+        }
+
+        private void dgSeries_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            var episodio = episodios[e.RowIndex];
+            if (!String.IsNullOrEmpty(episodio.ArquivoDownload))
+            {
+                var processInfo = new ProcessStartInfo(episodio.ArquivoDownload);
+                Process process = new Process();
+                process.StartInfo = processInfo;
+                process.Start();
+            }
+            else
+            {
+                MessageBox.Show("Legenda não encontrada.");
+            }
         }
     }
 }

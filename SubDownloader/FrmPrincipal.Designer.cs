@@ -29,17 +29,17 @@
         private void InitializeComponent()
         {
             this.btnBaixar = new System.Windows.Forms.Button();
-            this.dgSeries = new System.Windows.Forms.DataGridView();
-            this.Serie = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Download = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dgvEpisodios = new System.Windows.Forms.DataGridView();
             this.txtDiretorioSeries = new System.Windows.Forms.TextBox();
             this.lblDiretorioSeries = new System.Windows.Forms.Label();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.btnLimparLegendas = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.configuraçãoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            ((System.ComponentModel.ISupportInitialize)(this.dgSeries)).BeginInit();
+            this.Serie = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Download = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Status = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvEpisodios)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -53,48 +53,23 @@
             this.btnBaixar.UseVisualStyleBackColor = true;
             this.btnBaixar.Click += new System.EventHandler(this.btnBaixar_Click);
             // 
-            // dgSeries
+            // dgvEpisodios
             // 
-            this.dgSeries.AllowUserToAddRows = false;
-            this.dgSeries.AllowUserToDeleteRows = false;
-            this.dgSeries.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgSeries.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dgvEpisodios.AllowUserToAddRows = false;
+            this.dgvEpisodios.AllowUserToDeleteRows = false;
+            this.dgvEpisodios.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvEpisodios.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Serie,
             this.Download,
             this.Status});
-            this.dgSeries.Location = new System.Drawing.Point(12, 93);
-            this.dgSeries.Name = "dgSeries";
-            this.dgSeries.ReadOnly = true;
-            this.dgSeries.RowHeadersVisible = false;
-            this.dgSeries.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.dgSeries.Size = new System.Drawing.Size(863, 358);
-            this.dgSeries.TabIndex = 1;
-            // 
-            // Serie
-            // 
-            this.Serie.DataPropertyName = "Serie";
-            this.Serie.Frozen = true;
-            this.Serie.HeaderText = "Série";
-            this.Serie.Name = "Serie";
-            this.Serie.ReadOnly = true;
-            this.Serie.Width = 300;
-            // 
-            // Download
-            // 
-            this.Download.DataPropertyName = "Download";
-            this.Download.Frozen = true;
-            this.Download.HeaderText = "Download";
-            this.Download.Name = "Download";
-            this.Download.ReadOnly = true;
-            // 
-            // Status
-            // 
-            this.Status.DataPropertyName = "Status";
-            this.Status.Frozen = true;
-            this.Status.HeaderText = "Status";
-            this.Status.Name = "Status";
-            this.Status.ReadOnly = true;
-            this.Status.Width = 460;
+            this.dgvEpisodios.Location = new System.Drawing.Point(12, 93);
+            this.dgvEpisodios.Name = "dgvEpisodios";
+            this.dgvEpisodios.ReadOnly = true;
+            this.dgvEpisodios.RowHeadersVisible = false;
+            this.dgvEpisodios.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.dgvEpisodios.Size = new System.Drawing.Size(863, 358);
+            this.dgvEpisodios.TabIndex = 1;
+            this.dgvEpisodios.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgSeries_CellDoubleClick);
             // 
             // txtDiretorioSeries
             // 
@@ -140,6 +115,32 @@
             this.configuraçãoToolStripMenuItem.Text = "Configuração";
             this.configuraçãoToolStripMenuItem.Click += new System.EventHandler(this.configuraçãoToolStripMenuItem_Click);
             // 
+            // Serie
+            // 
+            this.Serie.DataPropertyName = "Nome";
+            this.Serie.Frozen = true;
+            this.Serie.HeaderText = "Série";
+            this.Serie.Name = "Serie";
+            this.Serie.ReadOnly = true;
+            this.Serie.Width = 300;
+            // 
+            // Download
+            // 
+            this.Download.DataPropertyName = "Download";
+            this.Download.Frozen = true;
+            this.Download.HeaderText = "Download";
+            this.Download.Name = "Download";
+            this.Download.ReadOnly = true;
+            // 
+            // Status
+            // 
+            this.Status.DataPropertyName = "Status";
+            this.Status.Frozen = true;
+            this.Status.HeaderText = "Status";
+            this.Status.Name = "Status";
+            this.Status.ReadOnly = true;
+            this.Status.Width = 460;
+            // 
             // FrmPrincipal
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -148,7 +149,7 @@
             this.Controls.Add(this.btnLimparLegendas);
             this.Controls.Add(this.lblDiretorioSeries);
             this.Controls.Add(this.txtDiretorioSeries);
-            this.Controls.Add(this.dgSeries);
+            this.Controls.Add(this.dgvEpisodios);
             this.Controls.Add(this.btnBaixar);
             this.Controls.Add(this.menuStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -159,7 +160,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "SubDownloader";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FrmPrincipal_FormClosed);
-            ((System.ComponentModel.ISupportInitialize)(this.dgSeries)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvEpisodios)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -170,16 +171,16 @@
         #endregion
 
         private System.Windows.Forms.Button btnBaixar;
-        private System.Windows.Forms.DataGridView dgSeries;
+        private System.Windows.Forms.DataGridView dgvEpisodios;
         private System.Windows.Forms.TextBox txtDiretorioSeries;
         private System.Windows.Forms.Label lblDiretorioSeries;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Serie;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Download;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Status;
         private System.Windows.Forms.Button btnLimparLegendas;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem configuraçãoToolStripMenuItem;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Serie;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Download;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Status;
     }
 }
 
