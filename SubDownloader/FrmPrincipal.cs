@@ -81,6 +81,7 @@ namespace SubDownloader
                         {
                             entry.WriteToFile(txtDiretorioSeries.Text + "\\" + Path.GetFileNameWithoutExtension(episodio.ArquivoEpisodio) + Path.GetExtension(entry.FilePath));
                             episodio.Status = "Legenda extraida.";
+                            extraido = true;
                             break;
                         }
                     }
@@ -177,7 +178,7 @@ namespace SubDownloader
             if (String.IsNullOrEmpty(nomeEpisodio)) return;
 
             var episodio = new Episodio();
-            episodio.Nome = nomeEpisodio;
+            episodio.Nome = nomeEpisodio.Replace('.', ' ');
             episodio.ArquivoEpisodio = arquivo;
 
             if (Directory.GetFiles(diretorio, nomeEpisodio + "*").Count() > 1)
