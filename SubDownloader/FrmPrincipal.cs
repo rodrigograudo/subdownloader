@@ -98,9 +98,9 @@ namespace SubDownloader
             }
         }
 
-        public void BuscaLegenda(Episodio episodio)
+        public async void BuscaLegenda(Episodio episodio)
         {
-            string urlLegenda = "http://legendas.tv/util/carrega_legendas_busca/termo:{0}/id_idioma:1/sel_tipo:d";
+            string urlLegenda = "http://legendas.tv/util/carrega_legendas_busca/{0}/1/d";
             string urlDownload = "http://legendas.tv/downloadarquivo/{0}";
 
             HtmlAgilityPack.HtmlDocument html = new HtmlAgilityPack.HtmlDocument();
@@ -109,7 +109,8 @@ namespace SubDownloader
             {
                 try
                 {
-                    html.LoadHtml(webDownload.DownloadString(String.Format(urlLegenda, episodio.Nome)));
+                    var htmlString = await webDownload.DownloadStringTaskAsync(String.Format(urlLegenda, episodio.Nome));
+                    html.LoadHtml(htmlString);
 
                     string idLegenda = String.Empty;
 
@@ -198,11 +199,11 @@ namespace SubDownloader
         {
             var arquivos = Directory.GetFiles(diretorio, "*s*e*")
                                     .Where(a => a.EndsWith(".mkv") || a.EndsWith(".mp4"))
-                                    .Select(a => Path.GetFileName(a));
+                                    .Select(a => a);
 
             foreach (var arquivo in arquivos)
             {
-                ValidaEpisodioSeriado(diretorio, arquivo);
+                ValidaEpisodioSeriado(Path.GetDirectoryName(arquivo), Path.GetFileName(arquivo));
             }
         }
 
