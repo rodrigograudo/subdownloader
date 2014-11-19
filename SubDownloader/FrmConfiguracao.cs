@@ -18,12 +18,16 @@ namespace SubDownloader
             InitializeComponent();
             cbExibirJaBaixadas.Checked = (bool)Settings.Default["ExibirJaBaixadas"];
             txtIgnorar.Text = Settings.Default["IgnorarStrings"].ToString();
+            txtLogin.Text = Settings.Default["Login"].ToString();
+            txtSenha.Text = Settings.Default["Senha"].ToString();
         }
 
         private void FrmConfiguracao_FormClosed(object sender, FormClosedEventArgs e)
         {
             Settings.Default["ExibirJaBaixadas"] = cbExibirJaBaixadas.Checked;
             Settings.Default["IgnorarStrings"] = txtIgnorar.Text;
+            Settings.Default["Login"] = txtLogin.Text;
+            Settings.Default["Senha"] = txtSenha.Text;
             Settings.Default.Save();
         }
     }

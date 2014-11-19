@@ -1,19 +1,14 @@
-﻿using SubDownloader.Properties;
+﻿using SharpCompress.Archive;
+using SubDownloader.Properties;
 using System;
-using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using SharpCompress.Archive.Rar;
-using SharpCompress.Archive;
-using System.Diagnostics;
 
 namespace SubDownloader
 {
@@ -21,6 +16,7 @@ namespace SubDownloader
     {
         private string pastaDownloads = AppDomain.CurrentDomain.BaseDirectory + "Legendas\\";
         private BindingList<Episodio> episodios;
+        private Cookie cookieAuth = null;
 
         public FrmPrincipal()
         {
@@ -44,14 +40,46 @@ namespace SubDownloader
             {
                 BuscaSeriados(txtDiretorioSeries.Text);
 
-                foreach (var episodio in episodios)
+                if (episodios.Count > 0)
                 {
-                    BuscaLegenda(episodio);
+                    if (Login())
+                    {
+                        foreach (var episodio in episodios)
+                        {
+                            BuscaLegenda(episodio);
+                        }
+                    }
                 }
             }
             else
             {
                 MessageBox.Show(String.Format("Diretório '{0}' inexistente.", txtDiretorioSeries.Text));
+            }
+        }
+
+        private bool Login()
+        {
+            using (WebClientPlus webClient = new WebClientPlus())
+            {
+                try 
+                {
+                    var dadosLogin = new NameValueCollection();
+                    dadosLogin.Add("_method", "POST");
+                    dadosLogin.Add("data[User][username]", Settings.Default["Login"].ToString());
+                    dadosLogin.Add("data[User][password]", Settings.Default["Senha"].ToString());
+                    dadosLogin.Add("data[lembrar]", "on");
+
+                    webClient.IgnoreRedirects = true;
+                    webClient.UploadValues("http://legendas.tv/login", "POST", dadosLogin);
+                    var cookie = webClient.ResponseHeaders["Set-Cookie"];
+                    cookieAuth = new Cookie("au", cookie.Substring(cookie.LastIndexOf("au=") + 3, cookie.IndexOf(";", cookie.LastIndexOf("au=")) - (cookie.LastIndexOf("au=") + 3)), "/", "legendas.tv");
+                    return true;
+                }
+                catch
+                {
+                    MessageBox.Show("Ocorreu um erro ao logar no site do Legendas.tv");
+                    return false;
+                }
             }
         }
 
@@ -105,11 +133,12 @@ namespace SubDownloader
 
             HtmlAgilityPack.HtmlDocument html = new HtmlAgilityPack.HtmlDocument();
 
-            using (WebDownload webDownload = new WebDownload())
+            using (WebClientPlus webClient = new WebClientPlus())
             {
                 try
                 {
-                    var htmlString = await webDownload.DownloadStringTaskAsync(String.Format(urlLegenda, episodio.Nome));
+                    webClient.OutboundCookies.Add(cookieAuth);
+                    var htmlString = await webClient.DownloadStringTaskAsync(String.Format(urlLegenda, episodio.Nome));
                     html.LoadHtml(htmlString);
 
                     string idLegenda = String.Empty;
@@ -136,9 +165,9 @@ namespace SubDownloader
 
                         if (!File.Exists(nomeArquivoDownload))
                         {
-                            webDownload.DownloadFileAsync(uriDownload, nomeArquivoDownload, episodio);
-                            webDownload.DownloadFileCompleted += webClient_DownloadFileCompleted;
-                            webDownload.DownloadProgressChanged += webClient_DownloadProgressChanged;
+                            webClient.DownloadFileAsync(uriDownload, nomeArquivoDownload, episodio);
+                            webClient.DownloadFileCompleted += webClient_DownloadFileCompleted;
+                            webClient.DownloadProgressChanged += webClient_DownloadProgressChanged;
                         }
                         else
                         {
